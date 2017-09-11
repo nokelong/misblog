@@ -1,7 +1,8 @@
-var setting = require('../setting');
-var mongodb = require('mongodb');
-var Db = mongodb.Db,
-    Connection = mongodb.Connection,
-    Server = mongodb.Server;
+var settings = require('../setting'),
+    Db = require('mongodb').Db,
+    Connection = require('mongodb').Connection,
+    Server = require('mongodb').Server;
 
-module.exports = new Db(setting.db, new Server(setting.host, Connection.DEFAULT_PORT, {}),{safe: true})
+//module.exports = new Db(settings.db, new Server(settings.host, 27017, {}), {safe: true});
+
+module.exports = new Db('blogdb', new Server('localhost', 27017));

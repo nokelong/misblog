@@ -14,8 +14,8 @@ module.exports = User;
  */
 User.prototype.save = function(callback) {
     var user = {
-    	name : this.name;
-    	pass : this.pass;
+    	name : this.name,
+    	pass : this.pass
     }
     mongoDb.open(function(error, db) {
         if(error) {
@@ -42,11 +42,12 @@ User.prototype.save = function(callback) {
  * @return {[type]}            [description]
  */
 User.get = function(username, callback) {
+    console.log('User.get')
     mongoDb.open(function(error, db) {
         if(error) {
             return callback(error);
         }
-
+        console.log('mongoDb.open')
         db.collection('users', function(error, collection) {
             if(error) {
             	mongoDb.close();

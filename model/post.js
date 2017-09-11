@@ -8,8 +8,8 @@ function Post(username, message, time) {
 
 Post.prototype.save = function(callback) {
 	var post = {
-	    user: this.user;
-	    message: this.message;
+	    user: this.user,
+	    message: this.message,
 	    time: this.time
 	}
 
