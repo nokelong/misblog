@@ -2,13 +2,22 @@ var express = require('express');
 var crypto = require('crypto');
 var router = express.Router();
 var User = require('../model/user.js');
-var post = require('../model/post.js');
+var Post = require('../model/post.js');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-    res.render('index', {
-        title: '首页',
-        layout:'layout' 
+    Post.get(null, function(err, posts) {
+        if (err) {
+            posts = [];
+        }
+        console.log('posts length:' + posts.length)
+        res.render('index', {
+            title: '首页',
+            posts: posts,
+            user : req.session.user,
+            success : req.flash('success').toString(),
+            error : req.flash('error').toString()
+        });
     });
 });
 
@@ -58,18 +67,13 @@ router.post('/reg', function(req, res) {
                 req.flash('error', err);
                 return res.redirect('/reg');
             }
-
+             
             req.session.user = user;
             req.flash('success', '注册成功');
             console.log('注册成功')
             res.redirect('/');
         });
     })
-});
-
-/* 发布消息 */
-router.get('/post', function(req, res, next) {
-  res.render('index', { title: '发布消息' });
 });
 
 /* 登录*/
@@ -101,8 +105,6 @@ router.post('/login', function(req, res) {
     })
 });
 
-
-
 /* 退出登录*/
 router.get('/logout', checkLogin);
 router.get('/logout', function(req, res) {
@@ -110,6 +112,50 @@ router.get('/logout', function(req, res) {
     req.flash('success', '退出登录');
     res.redirect('/');
 });
+
+//验证是否登录
+router.post('/post', checkLogin)
+router.post('/post', function(req, res,next) {
+    var message = req.body.post; //消息
+    var user = req.session.user;
+    console.log("post:"+user.name)
+    var post = new Post(user.name,message);
+    
+    post.save(function(error, pt) {
+        if(error) {
+            req.flash('error', error);
+            return res.redirect('/post');
+        }
+
+        req.session.post = pt;
+        req.flash('success', '发布成功');
+        res.redirect('/u/' + user.name);
+    });
+
+});
+
+router.get('/u/:user', function(req, res) {
+    var username = req.params.user;
+    console.log('/u/user:'+username)
+    User.get(username, function(error, user) {
+
+        if(!user) {
+            req.flash('error', '用户不存在');
+            return res.redirect('/');
+        }
+        Post.get(username, function(error, posts) {
+            if (error) {
+                req.flash('error', error);
+                return res.redirect('/');
+            }
+            res.render('user', {
+                title: username,
+                posts: posts,
+            });
+        });
+    });
+});
+
 function checkLogin(req, res, next) {
   if (!req.session.user) {
     req.flash('error', '未登入');

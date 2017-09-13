@@ -17,6 +17,8 @@ User.prototype.save = function(callback) {
     	name : this.name,
     	pass : this.pass
     }
+    
+    console.log(user.toString())
     mongoDb.open(function(error, db) {
         if(error) {
         	return callback(error);
@@ -30,7 +32,7 @@ User.prototype.save = function(callback) {
 
             collection.insert(user, {safe: true}, function(error, user) {
             	mongoDb.close();
-            	callback(error, user);
+            	return callback(error, user);
             })
         })
     })
@@ -47,7 +49,7 @@ User.get = function(username, callback) {
         if(error) {
             return callback(error);
         }
-        console.log('mongoDb.open')
+     
         db.collection('users', function(error, collection) {
             if(error) {
             	mongoDb.close();
