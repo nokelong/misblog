@@ -10,7 +10,7 @@ npm install
 mongod --dbpath=D:\mongodb\data\db
 
 # serve with hot reload at localhost:3000
-npm app.js
+node app.js
 
 
 # build for production and view the bundle analyzer report

@@ -98,7 +98,10 @@ router.post('/login', function(req, res) {
             req.flash('error', '用户不存在');
             return res.redirect('/login');
         }
-
+        if (user.pass != password) {
+            req.flash('error', '用户口令错误');
+            return res.redirect('/login');
+        }
         req.session.user = user;
         req.flash('success', '登入成功');
         res.redirect('/');
